@@ -1,0 +1,110 @@
+<div class="content-wrapper container-xxl p-0">
+    <div class="content-body">
+        <div class="card">
+            <section id="input-group-basic-merged">
+                <div class="row match-height">
+                    <div class="col-12 col-md-6">
+                        <core-card-snippet [snippetCode]="_snippetCodeBasic">
+                            <h4 class="card-title">Basic</h4>
+                            <div class="card-body">
+                                <form (ngSubmit)="submit(newConfigForm)" #newConfigForm="ngForm">
+                                    <label for="basic-default-password">CredentialName</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" [(ngModel)]="CredentialName" class="form-control"
+                                            placeholder="Credential's username" aria-label="CredentialName's username"
+                                            aria-describedby="basic-addon2" />
+                                    </div>
+
+                                    <label for="basic-default-password">Host</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" [(ngModel)]="Host" class="form-control"
+                                            placeholder="Host's username" aria-label="Host's username"
+                                            aria-describedby="basic-addon2" />
+                                    </div>
+
+                                    <label for="basic-default-password">Port</label>
+                                    <div class="input-group mb-2">
+                                        <input type="text" [(ngModel)]="Port" class="form-control"
+                                            placeholder="Port's user" aria-label="Port's user"
+                                            aria-describedby="basic-addon2" />
+                                    </div>
+
+                                    <div
+                                        *ngIf="routedata !== 'SQLServer' 
+                                    && routedata !== 'MySQL' && routedata !== 'PostgreSQL' && routedata !== 'IBM2' && routedata !== 'MariaDB' && routedata !== 'SQLite' && routedata !== 'MongoDb'">
+                                        <label for="basic-default-password">ServiceName</label>
+                                        <div class="input-group mb-2">
+                                            <input type="text" [(ngModel)]="ServiceName" class="form-control"
+                                                placeholder="Service's username" aria-label="Service's username"
+                                                aria-describedby="basic-addon2" />
+                                        </div>
+
+                                        <label for="basic-default-password">InstanceName</label>
+                                        <div class="input-group mb-2">
+                                            <input type="text" [(ngModel)]="InstanceName" class="form-control"
+                                                placeholder="Instance's username" aria-label="Instance's username"
+                                                aria-describedby="basic-addon2" />
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="routedata === 'Oracle'">
+                                        <label for="basic-default-password">ServiceName</label>
+                                        <div class="input-group mb-2">
+                                            <input type="text" [(ngModel)]="ServiceName" class="form-control"
+                                                placeholder="Service's username" aria-label="Service's username"
+                                                aria-describedby="basic-addon2" />
+                                        </div>
+
+                                        <label for="basic-default-password">InstanceName</label>
+                                        <div class="input-group mb-2">
+                                            <input type="text" [(ngModel)]="InstanceName" class="form-control"
+                                                placeholder="Instance's username" aria-label="Instance's username"
+                                                aria-describedby="basic-addon2" />
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        *ngIf="routedata === 'SQLServer' || routedata === 'MySQL' || routedata === 'IBM2' || routedata === 'MariaDB' || routedata ==='MongoDb' || routedata === 'PostgreSQL' || routedata === 'SQLite'">
+                                        <label for="basic-default-password">DBName</label>
+                                        <div class="input-group mb-2">
+                                            <input type="text" [(ngModel)]="DbName" class="form-control"
+                                                placeholder="DbName's " aria-label="DbName"
+                                                aria-describedby="basic-addon2" />
+                                        </div>
+                                    </div>
+
+                                    <label for="basic-default-password">Username</label>
+                                    <div class="input-group mb-2">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1">@</span>
+                                        </div>
+                                        <input type="text" [(ngModel)]="UserId" class="form-control"
+                                            placeholder="Username" aria-label="UserId"
+                                            aria-describedby="basic-addon1" />
+                                    </div>
+
+
+
+                                    <label for="basic-default-password">Password</label>
+                                    <div class="input-group form-password-toggle mb-2">
+                                        <input [(ngModel)]="Password" [type]="basicPwdShow ? 'text' : 'password'"
+                                            class="form-control" id="basic-default-password" placeholder="Your Password"
+                                            aria-describedby="basic-default-password" />
+                                        <div class="input-group-append" (click)="basicPwdShow = !basicPwdShow">
+                                            <span class="input-group-text cursor-pointer"><i class="feather" [ngClass]="{
+                                  'icon-eye-off': basicPwdShow,
+                                  'icon-eye': !basicPwdShow
+                                }"></i></span>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary mr-1" [disabled]="isSubmitting"
+                                        (click)="submit(newConfigForm)" rippleEffect>Save Configuration</button>
+                                </form>
+                            </div>
+                        </core-card-snippet>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>

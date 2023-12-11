@@ -1,0 +1,106 @@
+<div class="content-wrapper container-xxl p-0">
+    <div class="content-body">
+        <div class="row match-height">
+            <div class="col-lg-4 col-md-4 col-12">
+                <div class="card card-employee-task">
+                    <div class="card-header">
+                        <h4 class="card-title">Tables</h4>
+                        <!-- <i data-feather="more-vertical" class="font-medium-3 cursor-pointer"></i> -->
+                    </div>
+                    <div class="card-body">
+                        <div *ngIf="tblTasks && tblTasks.length > 0">
+                            <div class="employee-task d-flex justify-content-between align-items-center"
+                                *ngFor="let tblName of tblTasks" (click)="onItemClick(tblName)">
+                                <h6 class="mb-0">{{ tblName }}</h6>
+                            </div>
+                        </div>
+                        <div *ngIf="tblTasks && tblTasks.length === 0">
+                            No table available.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div *ngIf="tbl_com" class="col-lg-8 col-md-8 col-12">
+                <div class="card card-employee-task">
+                    <!-- icon start here -->
+                    <div class="demo-inline-spacing edit">
+
+                        <div class="avatar bg-secondary">
+                            <div class="avatar-content" [ngbTooltip]="'Primary Key'">
+                                <span [data-feather]="'key'" [class]="'avatar-icon'"></span>
+                            </div>
+                        </div>
+
+                         <div class="avatar bg-secondary">
+                            <div class="avatar-content" [ngbTooltip]="'Forign Key'">
+                                <span [data-feather]="'shuffle'" [class]="'avatar-icon'"></span>
+                            </div>
+                        </div> 
+
+                        <div class="avatar bg-secondary">
+                            <div class="avatar-content" [ngbTooltip]="'Add Column'">
+                                <span [data-feather]="'plus-circle'" [class]="'avatar-icon'"></span>
+                            </div>
+                        </div>
+
+                        <div class="avatar bg-secondary">
+                            <div class="avatar-content" [ngbTooltip]="'Delete Column'">
+                                <span [data-feather]="'x-circle'" [class]="'avatar-icon'"></span>
+                            </div>
+                        </div>
+                        <div class="avatar bg-secondary">
+                            <div class="avatar-content" [ngbTooltip]="'Check Constrain'">
+                                <span [data-feather]="'sliders'" [class]="'avatar-icon'"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- icon finish here -->
+
+                  
+                  
+                    <!-- table start here  -->
+                    <div class="table-responsive">
+                        <div class="p-1">
+                          <table class="table table-bordered">
+                            <thead>
+                              <tr>
+                                <th><input type="checkbox" [(ngModel)]="selectAllChecked" (change)="selectAllColumns()" />
+                                </th>
+                                <th>Column Name</th>
+                                <th>Data Type</th>
+                                <th>Allow Nulls</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr *ngFor="let column of metaTblResponse.data.tables[currentTableName]?.columns">
+                                <td class="tdheight">
+                                    <input [(ngModel)]="column.isSelected" type="checkbox" (change)="isSelect()" />
+                                  </td>
+                                <td class="tdheight">
+                                  <input [(ngModel)]="column.columnName" [disabled]="!column.editable" />
+                                </td>
+                                <td class="tdheight">
+                                  <input [(ngModel)]="column.dataType" [disabled]="!column.editable" />
+                                </td>
+                                <td class="tdheight">
+                                  <input type="checkbox" [(ngModel)]="column.allowNull" [disabled]="!column.editable" />
+                                </td>
+                                <td class="tdheight">
+                                  <button type="button" class="btn btn-secondary btn-icon btn-sm ml-auto" (click)="toggleEdit(column)">Edit</button>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <button type="button" style="float: right;margin-top: 9px;" class="btn btn-primary" (click)="createObjTbl()">Send Data</button>
+                        </div>
+                      </div>
+                    <!-- table finish here -->
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
