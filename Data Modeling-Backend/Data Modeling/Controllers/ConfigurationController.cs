@@ -1,8 +1,7 @@
 ﻿using Interface;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
-using System.Data;
+
 
 namespace Data_Modeling.Controllers
 {
@@ -10,12 +9,11 @@ namespace Data_Modeling.Controllers
     [ApiController]
     public class ConfigurationController : ControllerBase
     {
-        private readonly IUserService _userService;
+      
         private readonly IConfigurationService _configurationService;
 
-        public ConfigurationController(IUserService userService, IConfigurationService configurationService)
+        public ConfigurationController(IConfigurationService configurationService)
         {
-            _userService = userService;
             _configurationService = configurationService;
         }
 
@@ -67,6 +65,21 @@ namespace Data_Modeling.Controllers
         public Task<ResponseModel> GetMetaDataTableByName(string tblName,ConnectionDb Conn)
         {
             var response = _configurationService.GetMetaDataTableByName(tblName,Conn);
+            return response;
+        }
+
+        [HttpPost("GetMetaDataMultipleTableByName")]
+        public async Task<ResponseModel> GetMetaDataMultipleTableByName(MultipleTableRequest request)
+        {
+            var response = await _configurationService.GetMetaDataMultipleTableByName(request.TableNames, request.Conn);
+            return response;
+        }
+
+
+        [HttpPost("CreateTable")]
+        public Task<ResponseModel> CreateTable(TableData tblData) 
+        {
+            var response = _configurationService.CreateTable(tblData);
             return response;
         }
     }

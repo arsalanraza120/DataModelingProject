@@ -3444,11 +3444,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\Data Modeling\\Data Modeling.csproj",
+      "projectUniqueName": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Data Modeling\\Data Modeling.csproj",
       "projectName": "Data Modeling",
-      "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\Data Modeling\\Data Modeling.csproj",
+      "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Data Modeling\\Data Modeling.csproj",
       "packagesPath": "C:\\Users\\arsalan.raza\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\Data Modeling\\obj\\",
+      "outputPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Data Modeling\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\arsalan.raza\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -3465,17 +3465,17 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\DataBaseContext\\DataBaseContext.csproj": {
-              "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\DataBaseContext\\DataBaseContext.csproj"
+            "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\DataBaseContext\\DataBaseContext.csproj": {
+              "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\DataBaseContext\\DataBaseContext.csproj"
             },
-            "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\Interface\\Interface.csproj": {
-              "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\Interface\\Interface.csproj"
+            "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Interface\\Interface.csproj": {
+              "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Interface\\Interface.csproj"
             },
-            "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\Models\\Models.csproj": {
-              "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\Models\\Models.csproj"
+            "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Models\\Models.csproj": {
+              "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Models\\Models.csproj"
             },
-            "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\ServiceImplemention\\ServiceImplemention.csproj": {
-              "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\ServiceImplemention\\ServiceImplemention.csproj"
+            "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\ServiceImplemention\\ServiceImplemention.csproj": {
+              "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\ServiceImplemention\\ServiceImplemention.csproj"
             }
           }
         }

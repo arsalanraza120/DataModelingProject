@@ -25,61 +25,12 @@
         </div>
       </section>
  
-     
-       <div class="table-container">
-        <div *ngFor="let table of tables" class="table-wrapper">
-          <h2>{{ table.tableName }}</h2>
-          <table>
-            <tr>
-              <th>Column Name</th>
-              <th>Data Type</th>
-              <th>Keys</th>
-            </tr>
-            <tr *ngFor="let column of table.columns">
-              <td>{{ column.columnName }}</td>
-              <td>{{ column.dataType }} <span *ngIf="column.size !== undefined && column.size !== null && column.size !== ''">({{ column.size }})</span></td>
+      <div class="overlay" *ngIf="loading">
+        <div class="spinner"></div>
+      </div>
 
-              <td *ngIf="column.isPrimaryKey"><i class="fa fa-key icon-primary"></i></td>
-              <td *ngIf="column.isForeignKey"><i class="fa fa-key icon-foreign"></i></td>
-            </tr>
-          </table>
-        </div>
-      </div> 
-<!-- 
-      <ngx-graph
-      [view]="view"
-      [nodes]="nodes"
-      [links]="links"
-      [autoZoom]="true"
-      [panOnZoom]="true"
-    >
-    </ngx-graph> -->
-
-    <div #erDiagram></div>
-
-    <div id="er-diagram"></div>
-    </div>
   </div>
 
-  
-  <!-- <div *ngIf="databaseModel">
-    {{ databaseModel | json }}
-
-     <div *ngFor="let tableName of Object.keys(databaseModel)">
-      <h2>{{ tableName }}</h2>
-      <ul>
-        <li *ngFor="let column of databaseModel[tableName]?.columns">
-          {{ column?.columnName }} - {{ column?.dataType }}
-          <ng-container *ngIf="databaseModel[tableName]?.primaryKeys?.includes(column?.columnName)">
-            <span class="icon primary-key-icon">PK</span>
-          </ng-container>
-          <ng-container *ngIf="isColumnForeignKey(tableName, column?.columnName)">
-            <span class="icon foreign-key-icon">FK</span>
-          </ng-container>
-        </li>
-      </ul>
-    </div> 
-  </div> -->
   
 
   

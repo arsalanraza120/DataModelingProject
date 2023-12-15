@@ -519,7 +519,6 @@ export class CoreSidebarComponent implements OnInit, OnDestroy {
    * Collapse the sidebar permanently
    */
   collapse(): void {
-debugger
     // If the sidebar is not collapsed
     if (this.collapsed) {
       return;

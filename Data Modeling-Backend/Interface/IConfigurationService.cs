@@ -18,7 +18,8 @@ namespace Interface
         public Task<ResponseModel> GetTableNames(ConnectionDb Conn);
         public ResponseModel GetCredentialById(int Id);
         public Task<ResponseModel> GetMetaDataTableByName(string tblName, ConnectionDb Conn);
-
+        public Task<ResponseModel> CreateTable(TableData tblData);
+        public Task<ResponseModel> GetMetaDataMultipleTableByName(List<string> tableNames, ConnectionDb Conn);
     }
 }
 

@@ -1,7 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { dbService } from '../db-list/db-list.service';
 import { ActivatedRoute } from '@angular/router';
-import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { connectionDataService } from '../connectionData.service';
 import Swal from 'sweetalert2';
 
@@ -48,41 +47,51 @@ export class ModelingComponent implements OnInit {
     tbl_com: boolean;
     routedataId: any;
     tblTasks: any[] = [];
-    @BlockUI() blockUI: NgBlockUI;
     currentTableName: string;
     selectAllChecked: boolean = false;
     selectedRows: any[] = [];
-
+    loading = true;
     metaTblResponse: MetaTableResponse;
 
 
+
     ngOnInit(): void {
-        this.blockUI.start();
-        this.selectAllChecked = false;
+       this.selectAllChecked = false;
     }
     toggleEdit(column: any) {
-        debugger
+
         column.editable = !column.editable;
     }
 
     constructor(
         private route: ActivatedRoute,
         private connectionDataService: connectionDataService,
-        private changeDetector: ChangeDetectorRef,
         private _dbService: dbService
     ) {
-        this.blockUI.start('Loading...');
-        this.tbl_com = false
+
+        this.tbl_com = false;
+        this.loading = true;
         this.route.params.subscribe(params => {
             this.routedataId = params['id'];
             this._dbService.getCredentialById(this.routedataId).subscribe((res: any) => {
                 if (res.isSuccess) {
+                    this.loading = false;
                     const connectionData = res.data;
                     this.connectionDataService.setConnectionData(connectionData);
                     this._dbService.getTableNames(this.connectionDataService.getConnectionData()).subscribe(
                         (apiResponse: any) => {
-                            if (apiResponse.isSuccess) {
+                            if (apiResponse.data.isSuccess) {
+                                this.loading = false;
                                 this.tblTasks = apiResponse.data.data;
+
+                            }
+                            else if (apiResponse.data.isSuccess == false) {
+                                const message = apiResponse.data.message;
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error Fetching Table',
+                                    text: message,
+                                });
                             }
                         },
                         error => {
@@ -91,17 +100,38 @@ export class ModelingComponent implements OnInit {
                     );
                 }
                 else if (res.isSuccess == false) {
-
+                    this.loading = false;
                 }
             })
         });
     }
 
     createObjTbl() {
+        this.loading = true;
         if (this.selectedRows.length > 0) {
-            debugger
-            this._dbService.createTable(this.selectedRows).subscribe((res: any) => {
+            const tableName = this.metaTblResponse.data.tableName
+            const dataToSend = {
+                tableName: tableName,
+                selectedRows: this.selectedRows,
+            };
+            this._dbService.createTable(dataToSend).subscribe((res: any) => {
                 if (res.isSuccess) {
+                    this.loading = false;
+                    const message = res.message;
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Table SuccessFully',
+                        text: message,
+                    });
+                }
+                else if (res.isSuccess == false) {
+                    this.loading = false;
+                    const message = res.message;
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Table Error',
+                        text: message,
+                    });
                 }
             });
         } else {
@@ -120,9 +150,9 @@ export class ModelingComponent implements OnInit {
                 if (res.isSuccess) {
                     this.metaTblResponse = res;
                     this.currentTableName = res.data.tableName;
-                    debugger;
+
                 } else if (res.isSuccess === false) {
-                    debugger;
+
                 }
             });
     }
@@ -130,19 +160,16 @@ export class ModelingComponent implements OnInit {
 
 
     selectAllColumns() {
-        debugger
         const currentTable = this.metaTblResponse.data.tables[this.currentTableName];
         if (currentTable) {
             for (var i = 0; i < currentTable.columns.length; i++) {
                 currentTable.columns[i].isSelected = this.selectAllChecked;
             }
-
             this.selectedRows = currentTable.columns.filter((item: any) => item.isSelected);
         }
     }
 
     isSelect() {
-        debugger;
         const currentTable = this.metaTblResponse.data.tables[this.currentTableName];
         if (currentTable) {
             this.selectAllChecked = currentTable.columns.every((item: any) => item.isSelected === true);

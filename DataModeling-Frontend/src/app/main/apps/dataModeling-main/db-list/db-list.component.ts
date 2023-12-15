@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'db-list',
@@ -15,17 +15,12 @@ export class dbListComponent implements OnInit {
    * @param {UserListService} _userListService
    * @param {CoreSidebarService} _coreSidebarService
    */
-  // constructor(
-  //   private _coreSidebarService: CoreSidebarService,
-  //   private _coreConfigService: CoreConfigService
-  // ) {
-  // }
+  
 
   constructor() {    
   }
 
   ngOnInit(): void {
-    
   }
 
 }

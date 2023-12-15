@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Sqr2QUBiiJcnjf2FBc+GywVMR68I4ds4af8TN22kPs12safiMfMsPqqop6FfT04QwUgUdcz/4FYuJECasdg99g==",
+  "dgSpecHash": "Zw4qwTwPPxxlXygQ4hxJfP+GAalwFt0wNTNgiq8bdJ9uN42gdFiz80bdjVLNWPRAzh/RqJxL87jLnzYuIBcj0g==",
   "success": true,
-  "projectFilePath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\Data Modeling\\Data Modeling\\Data Modeling.csproj",
+  "projectFilePath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Data Modeling\\Data Modeling.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\arsalan.raza\\.nuget\\packages\\entityframework\\6.4.4\\entityframework.6.4.4.nupkg.sha512",
     "C:\\Users\\arsalan.raza\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",

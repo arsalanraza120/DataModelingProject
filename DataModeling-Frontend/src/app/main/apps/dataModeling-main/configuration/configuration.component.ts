@@ -20,7 +20,8 @@ export class ConfigurationComponent implements OnInit {
   public ServiceName;
   public DbName;
   public CredentialName;
-  routedata: any
+  routedata: any;
+  loading= false;
   public basicPwdShow = false;
   isSubmitting: boolean = false;
   public _snippetCodeBasic = snippet.snippetCodeBasic;
@@ -37,13 +38,12 @@ export class ConfigurationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
   }
 
   submit(form: NgForm) {
+    this.loading = true;
     if (form.valid && !this.isSubmitting) {
       this.isSubmitting = true;
-      debugger
       const ConfigData = {
         id: 0,
         Host: this.Host,
@@ -59,10 +59,11 @@ export class ConfigurationComponent implements OnInit {
       this._dbService
         .configurationSave(ConfigData)
         .subscribe((res: any) => {
-          debugger;
+        
           this.isSubmitting = false
           if (res.isSuccess) {
             const message = res.message;
+            this.loading = false;
             Swal.fire({
               icon: 'success',
               title: 'Configuration Success Fully',
@@ -72,6 +73,7 @@ export class ConfigurationComponent implements OnInit {
           }
           else if (res.isSuccess == false) {
             const message = res.message;
+            this.loading = false;
             Swal.fire({
               icon: 'error',
               title: 'Connection Failed',

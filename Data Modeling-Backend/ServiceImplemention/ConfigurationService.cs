@@ -1,8 +1,6 @@
 ﻿using DataBaseContext;
 using Interface;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Models;
 using Npgsql;
@@ -400,144 +398,135 @@ namespace ServiceImplemention
             return _rresponsewrapper;
         }
 
-        
+        public Dictionary<string, DatabaseModel> GetMultipleTablesMetadata(List<string> tableNames, string Conn)
+        {
+            Dictionary<string, DatabaseModel> tablesMetadata = new Dictionary<string, DatabaseModel>();
 
-        //public DatabaseModel GetTableColumnDataTypes(string connectionString)
-        //{
-        //    DatabaseModel databaseModel = new DatabaseModel
-        //    {
-        //        Tables = new Dictionary<string, TableModel>()
-        //    };
+            using (SqlConnection connection = new SqlConnection(Conn))
+            {
+                connection.Open();
 
-        //    using (SqlConnection connection = new SqlConnection(connectionString))
-        //    {
-        //        connection.Open();
+                foreach (string tableName in tableNames)
+                {
+                    DatabaseModel databaseModel = new DatabaseModel
+                    {
+                        TableName = tableName,
+                        Tables = new Dictionary<string, TableModel>()
+                    };
 
-        //        string tableNameQuery = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
+                    TableModel tableModel = new TableModel
+                    {
+                        Columns = new List<TableColumnModel>(),
+                        ForeignKeys = new List<ForeignKeyModel>(),
+                        PrimaryKeys = new List<PrimaryKeyModel>()
+                    };
 
-        //        using (SqlCommand tableCommand = new SqlCommand(tableNameQuery, connection))
-        //        using (SqlDataReader tableReader = tableCommand.ExecuteReader())
-        //        {
-        //            while (tableReader.Read())
-        //            {
-        //                string tableName = tableReader["TABLE_NAME"].ToString();
-        //                TableModel tableModel = new TableModel
-        //                {
-        //                    TableName = tableName,
-        //                    Columns = new List<TableColumnModel>(),
-        //                    ForeignKeys = new List<ForeignKeyModel>(),
-        //                    PrimaryKeys = new List<string>()
-        //                };
+                    // Fetch column information
+                    string columnQuery = @"
+                SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, IS_NULLABLE
+                FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_NAME = @TableName";
 
-        //                // Get column data
-        //                using (SqlConnection tableConnection = new SqlConnection(connectionString))
-        //                {
-        //                    tableConnection.Open();
+                    using (SqlCommand columnCommand = new SqlCommand(columnQuery, connection))
+                    {
+                        columnCommand.Parameters.AddWithValue("@TableName", tableName);
 
-        //                    string columnQuery = "SELECT COLUMN_NAME, DATA_TYPE ,CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName";
+                        using (SqlDataReader columnReader = columnCommand.ExecuteReader())
+                        {
+                            while (columnReader.Read())
+                            {
+                                string columnName = columnReader["COLUMN_NAME"].ToString();
+                                string dataType = columnReader["DATA_TYPE"].ToString();
+                                string size = columnReader["CHARACTER_MAXIMUM_LENGTH"].ToString();
+                                bool allowNull = columnReader["IS_NULLABLE"].ToString().ToLower() == "yes";
 
-        //                    using (SqlCommand columnCommand = new SqlCommand(columnQuery, tableConnection))
-        //                    {
-        //                        columnCommand.Parameters.AddWithValue("@TableName", tableName);
-
-        //                        using (SqlDataReader columnReader = columnCommand.ExecuteReader())
-        //                        {
-        //                            while (columnReader.Read())
-        //                            {
-        //                                string columnName = columnReader["COLUMN_NAME"].ToString();
-        //                                string dataType = columnReader["DATA_TYPE"].ToString();
-        //                                string size = columnReader["CHARACTER_MAXIMUM_LENGTH"].ToString();
-        //                                tableModel.Columns.Add(new TableColumnModel
-        //                                {
-        //                                    ColumnName = columnName,
-        //                                    DataType = dataType,
-        //                                    Size = size
-        //                                });
-        //                            }
-        //                        }
-        //                    }
-        //                }
-
-        //                // Get foreign key relationships
-        //                using (SqlConnection relationshipConnection = new SqlConnection(connectionString))
-        //                {
-        //                    relationshipConnection.Open();
-
-        //                    string relationshipQuery = @"
-        //                SELECT
-        //                    TC.CONSTRAINT_NAME,
-        //                    KCU.COLUMN_NAME,
-        //                    KCU.TABLE_NAME AS REFERENCED_TABLE,
-        //                    RC.CONSTRAINT_NAME AS REFERENCED_CONSTRAINT
-        //                FROM
-        //                    INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
-        //                    INNER JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE KCU ON TC.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME
-        //                    LEFT JOIN INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC ON TC.CONSTRAINT_NAME = RC.UNIQUE_CONSTRAINT_NAME
-        //                WHERE
-        //                    TC.TABLE_NAME = @TableName
-        //                    AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY'";
-
-        //                    using (SqlCommand relationshipCommand = new SqlCommand(relationshipQuery, relationshipConnection))
-        //                    {
-        //                        relationshipCommand.Parameters.AddWithValue("@TableName", tableName);
-
-        //                        using (SqlDataReader relationshipReader = relationshipCommand.ExecuteReader())
-        //                        {
-        //                            while (relationshipReader.Read())
-        //                            {
-        //                                string constraintName = relationshipReader["CONSTRAINT_NAME"].ToString();
-        //                                string columnName = relationshipReader["COLUMN_NAME"].ToString();
-        //                                string referencedTable = relationshipReader["REFERENCED_TABLE"].ToString();
-        //                                string referencedConstraint = relationshipReader["REFERENCED_CONSTRAINT"].ToString();
-
-        //                                tableModel.ForeignKeys.Add(new ForeignKeyModel
-        //                                {
-        //                                    ConstraintName = constraintName,
-        //                                    ColumnName = columnName,
-        //                                    ReferencedTable = referencedTable,
-        //                                    ReferencedConstraint = referencedConstraint
-        //                                });
-        //                            }
-        //                        }
-        //                    }
-        //                }
-
-        //                // Get primary key information
-        //                using (SqlConnection primaryKeyConnection = new SqlConnection(connectionString))
-        //                {
-        //                    primaryKeyConnection.Open();
-
-        //                    string primaryKeyQuery = @"
-        //                    SELECT COLUMN_NAME
-        //                    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
-        //                    JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE CCU ON TC.CONSTRAINT_NAME = CCU.CONSTRAINT_NAME
-        //                    WHERE TC.TABLE_NAME = @TableName AND TC.CONSTRAINT_TYPE = 'PRIMARY KEY'";
-
-        //                    using (SqlCommand primaryKeyCommand = new SqlCommand(primaryKeyQuery, primaryKeyConnection))
-        //                    {
-        //                        primaryKeyCommand.Parameters.AddWithValue("@TableName", tableName);
-
-        //                        using (SqlDataReader primaryKeyReader = primaryKeyCommand.ExecuteReader())
-        //                        {
-        //                            while (primaryKeyReader.Read())
-        //                            {
-        //                                string columnName = primaryKeyReader["COLUMN_NAME"].ToString();
-        //                                tableModel.PrimaryKeys.Add(columnName);
-        //                            }
-        //                        }
-        //                    }
-        //                }
-
-        //                databaseModel.Tables[tableName] = tableModel;
-        //            }
-        //        }
-        //    }
-
-        //    return databaseModel;
-        //}
+                                tableModel.Columns.Add(new TableColumnModel
+                                {
+                                    ColumnName = columnName,
+                                    DataType = dataType,
+                                    Size = size,
+                                    AllowNull = allowNull,
+                                });
+                            }
+                        }
+                    }
 
 
-        public DatabaseModel GetTableByName(string tableName, string Conn)
+                    // Fetch foreign key information
+                    string foreignKeyQuery = @"
+                SELECT
+                    TC.CONSTRAINT_NAME,
+                    KCU.COLUMN_NAME,
+                    KCU.TABLE_NAME AS REFERENCED_TABLE,
+                    RC.CONSTRAINT_NAME AS REFERENCED_CONSTRAINT
+                FROM
+                    INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+                    INNER JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE KCU ON TC.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME
+                    LEFT JOIN INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC ON TC.CONSTRAINT_NAME = RC.UNIQUE_CONSTRAINT_NAME
+                WHERE
+                    TC.TABLE_NAME = @TableName
+                    AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY'";
+
+                    using (SqlCommand foreignKeyCommand = new SqlCommand(foreignKeyQuery, connection))
+                    {
+                        foreignKeyCommand.Parameters.AddWithValue("@TableName", tableName);
+
+                        using (SqlDataReader foreignKeyReader = foreignKeyCommand.ExecuteReader())
+                        {
+                            while (foreignKeyReader.Read())
+                            {
+                                string foreignKeyConstraintName = foreignKeyReader["CONSTRAINT_NAME"].ToString();
+                                string foreignKeyColumnName = foreignKeyReader["COLUMN_NAME"].ToString();
+                                string referencedTableName = foreignKeyReader["REFERENCED_TABLE"].ToString();
+                                string referencedConstraintName = foreignKeyReader["REFERENCED_CONSTRAINT"].ToString();
+
+                                tableModel.ForeignKeys.Add(new ForeignKeyModel
+                                {
+                                    ConstraintName = foreignKeyConstraintName,
+                                    ForeignKeyColumnName = foreignKeyColumnName,
+                                    ReferencedTableName = referencedTableName,
+                                    ReferencedConstraintName = referencedConstraintName
+                                });
+                            }
+                        }
+                    }
+
+
+                    // Fetch primary key information
+                    string primaryKeyQuery = @"
+                SELECT COLUMN_NAME
+                FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+                JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE CCU ON TC.CONSTRAINT_NAME = CCU.CONSTRAINT_NAME
+                WHERE TC.TABLE_NAME = @TableName AND TC.CONSTRAINT_TYPE = 'PRIMARY KEY'";
+
+                    using (SqlCommand primaryKeyCommand = new SqlCommand(primaryKeyQuery, connection))
+                    {
+                        primaryKeyCommand.Parameters.AddWithValue("@TableName", tableName);
+
+                        using (SqlDataReader primaryKeyReader = primaryKeyCommand.ExecuteReader())
+                        {
+                            while (primaryKeyReader.Read())
+                            {
+                                string primaryColumnName = primaryKeyReader["COLUMN_NAME"].ToString();
+
+                                tableModel.PrimaryKeys.Add(new PrimaryKeyModel
+                                {
+                                    ColumnName = primaryColumnName
+                                });
+                            }
+                        }
+                    }
+                    databaseModel.Tables[tableName] = tableModel;
+
+
+                    tablesMetadata[tableName] = databaseModel;
+                }
+            }
+
+            return tablesMetadata;
+        }
+
+        public DatabaseModel GetMetaTableByName(string tableName, string Conn)
         {
             DatabaseModel databaseModel = new DatabaseModel
             {
@@ -551,7 +540,7 @@ namespace ServiceImplemention
 
                 TableModel tableModel = new TableModel
                 {
-                  
+
                     Columns = new List<TableColumnModel>(),
                     ForeignKeys = new List<ForeignKeyModel>(),
                     PrimaryKeys = new List<PrimaryKeyModel>()
@@ -582,7 +571,7 @@ namespace ServiceImplemention
                                 DataType = dataType,
                                 Size = size,
                                 AllowNull = allowNull,
-                 
+
                             });
                         }
                     }
@@ -657,54 +646,6 @@ namespace ServiceImplemention
 
             return databaseModel;
         }
-
-
-        public void AddForeignKey(string tableName, string columnName, string referencedTableName, string referencedColumnName, string Conn)
-        {
-            using (SqlConnection connection = new SqlConnection(Conn))
-            {
-                connection.Open();
-
-               
-            string checkForeignKeyQuery = @"
-            SELECT COUNT(1) 
-            FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
-            JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE KCU ON TC.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME
-            WHERE TC.TABLE_NAME = @TableName 
-              AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
-              AND KCU.COLUMN_NAME = @ColumnName
-              AND TC.REFERENCED_TABLE_NAME = @ReferencedTableName
-              AND KCU.REFERENCED_COLUMN_NAME = @ReferencedColumnName";
-
-                using (SqlCommand checkForeignKeyCommand = new SqlCommand(checkForeignKeyQuery, connection))
-                {
-                    checkForeignKeyCommand.Parameters.AddWithValue("@TableName", tableName);
-                    checkForeignKeyCommand.Parameters.AddWithValue("@ColumnName", columnName);
-                    checkForeignKeyCommand.Parameters.AddWithValue("@ReferencedTableName", referencedTableName);
-                    checkForeignKeyCommand.Parameters.AddWithValue("@ReferencedColumnName", referencedColumnName);
-
-                    int existingForeignKeyCount = (int)checkForeignKeyCommand.ExecuteScalar();
-
-                    if (existingForeignKeyCount == 0)
-                    {
-                       
-                    string addForeignKeyQuery = $@"
-                    ALTER TABLE {tableName}
-                    ADD CONSTRAINT FK_{tableName}_{referencedTableName}
-                    FOREIGN KEY ({columnName})
-                    REFERENCES {referencedTableName}({referencedColumnName})";
-
-                        using (SqlCommand addForeignKeyCommand = new SqlCommand(addForeignKeyQuery, connection))
-                        {
-                            addForeignKeyCommand.ExecuteNonQuery();
-                        }
-                    }
-                }
-            }
-        }
-
-
-
 
         public ResponseModel GetCredentialById(int Id)
         {
@@ -846,12 +787,12 @@ namespace ServiceImplemention
         }
 
 
-        public async Task<ResponseModel> GetMetaDataTableByName(string? tblName,ConnectionDb Conn)
+        public async Task<ResponseModel> GetMetaDataTableByName(string? tblName, ConnectionDb Conn)
         {
-            if (Conn.dbType == DatabaseType.SQLServer.ToString()) 
+            if (Conn.dbType == DatabaseType.SQLServer.ToString())
             {
                 string sqlserverCon = GenerateSQLServerConnectionTmp(Conn);
-                DatabaseModel databaseModel = GetTableByName(tblName, sqlserverCon);
+                DatabaseModel databaseModel = GetMetaTableByName(tblName, sqlserverCon);
 
                 _rresponsewrapper.Data = databaseModel;
                 _rresponsewrapper.IsSuccess = true;
@@ -860,13 +801,31 @@ namespace ServiceImplemention
 
             return _rresponsewrapper;
         }
-        
+
+
+        public async Task<ResponseModel> GetMetaDataMultipleTableByName(List<string> tableNames, ConnectionDb Conn)
+        {
+            if (Conn.dbType == DatabaseType.SQLServer.ToString())
+            {
+                string sqlserverCon = GenerateSQLServerConnectionTmp(Conn);
+
+                Dictionary<string, DatabaseModel> tablesMetadata = await Task.Run(() => GetMultipleTablesMetadata(tableNames, sqlserverCon));
+
+                _rresponsewrapper.Data = tablesMetadata;
+                _rresponsewrapper.IsSuccess = true;
+            }
+
+            return _rresponsewrapper;
+        }
+
+
+
         public async Task<ResponseModel> GetAllTablesMetaData(ConnectionDb Conn)
         {
             if (Conn.dbType == DatabaseType.SQLServer.ToString())
             {
                 string SqlserverconString = GenerateSQLServerConnectionTmp(Conn);
-              //  DatabaseModel databaseModel = GetTableColumnDataTypes(SqlserverconString);
+                //  DatabaseModel databaseModel = GetTableColumnDataTypes(SqlserverconString);
 
 
                 _rresponsewrapper.Data = "";//databaseModel;
@@ -876,12 +835,303 @@ namespace ServiceImplemention
             else if (Conn.dbType == DatabaseType.Oracle.ToString())
             {
                 string OracleConString = GenerateOracleConnectionTmp(Conn);
-               
+
 
             }
 
             return _rresponsewrapper;
         }
+
+
+        //public DatabaseModel GetTableColumnDataTypes(string connectionString)
+        //{
+        //    DatabaseModel databaseModel = new DatabaseModel
+        //    {
+        //        Tables = new Dictionary<string, TableModel>()
+        //    };
+
+        //    using (SqlConnection connection = new SqlConnection(connectionString))
+        //    {
+        //        connection.Open();
+
+        //        string tableNameQuery = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
+
+        //        using (SqlCommand tableCommand = new SqlCommand(tableNameQuery, connection))
+        //        using (SqlDataReader tableReader = tableCommand.ExecuteReader())
+        //        {
+        //            while (tableReader.Read())
+        //            {
+        //                string tableName = tableReader["TABLE_NAME"].ToString();
+        //                TableModel tableModel = new TableModel
+        //                {
+        //                    TableName = tableName,
+        //                    Columns = new List<TableColumnModel>(),
+        //                    ForeignKeys = new List<ForeignKeyModel>(),
+        //                    PrimaryKeys = new List<string>()
+        //                };
+
+        //                // Get column data
+        //                using (SqlConnection tableConnection = new SqlConnection(connectionString))
+        //                {
+        //                    tableConnection.Open();
+
+        //                    string columnQuery = "SELECT COLUMN_NAME, DATA_TYPE ,CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = @TableName";
+
+        //                    using (SqlCommand columnCommand = new SqlCommand(columnQuery, tableConnection))
+        //                    {
+        //                        columnCommand.Parameters.AddWithValue("@TableName", tableName);
+
+        //                        using (SqlDataReader columnReader = columnCommand.ExecuteReader())
+        //                        {
+        //                            while (columnReader.Read())
+        //                            {
+        //                                string columnName = columnReader["COLUMN_NAME"].ToString();
+        //                                string dataType = columnReader["DATA_TYPE"].ToString();
+        //                                string size = columnReader["CHARACTER_MAXIMUM_LENGTH"].ToString();
+        //                                tableModel.Columns.Add(new TableColumnModel
+        //                                {
+        //                                    ColumnName = columnName,
+        //                                    DataType = dataType,
+        //                                    Size = size
+        //                                });
+        //                            }
+        //                        }
+        //                    }
+        //                }
+
+        //                // Get foreign key relationships
+        //                using (SqlConnection relationshipConnection = new SqlConnection(connectionString))
+        //                {
+        //                    relationshipConnection.Open();
+
+        //                    string relationshipQuery = @"
+        //                SELECT
+        //                    TC.CONSTRAINT_NAME,
+        //                    KCU.COLUMN_NAME,
+        //                    KCU.TABLE_NAME AS REFERENCED_TABLE,
+        //                    RC.CONSTRAINT_NAME AS REFERENCED_CONSTRAINT
+        //                FROM
+        //                    INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+        //                    INNER JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE KCU ON TC.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME
+        //                    LEFT JOIN INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC ON TC.CONSTRAINT_NAME = RC.UNIQUE_CONSTRAINT_NAME
+        //                WHERE
+        //                    TC.TABLE_NAME = @TableName
+        //                    AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY'";
+
+        //                    using (SqlCommand relationshipCommand = new SqlCommand(relationshipQuery, relationshipConnection))
+        //                    {
+        //                        relationshipCommand.Parameters.AddWithValue("@TableName", tableName);
+
+        //                        using (SqlDataReader relationshipReader = relationshipCommand.ExecuteReader())
+        //                        {
+        //                            while (relationshipReader.Read())
+        //                            {
+        //                                string constraintName = relationshipReader["CONSTRAINT_NAME"].ToString();
+        //                                string columnName = relationshipReader["COLUMN_NAME"].ToString();
+        //                                string referencedTable = relationshipReader["REFERENCED_TABLE"].ToString();
+        //                                string referencedConstraint = relationshipReader["REFERENCED_CONSTRAINT"].ToString();
+
+        //                                tableModel.ForeignKeys.Add(new ForeignKeyModel
+        //                                {
+        //                                    ConstraintName = constraintName,
+        //                                    ColumnName = columnName,
+        //                                    ReferencedTable = referencedTable,
+        //                                    ReferencedConstraint = referencedConstraint
+        //                                });
+        //                            }
+        //                        }
+        //                    }
+        //                }
+
+        //                // Get primary key information
+        //                using (SqlConnection primaryKeyConnection = new SqlConnection(connectionString))
+        //                {
+        //                    primaryKeyConnection.Open();
+
+        //                    string primaryKeyQuery = @"
+        //                    SELECT COLUMN_NAME
+        //                    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+        //                    JOIN INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE CCU ON TC.CONSTRAINT_NAME = CCU.CONSTRAINT_NAME
+        //                    WHERE TC.TABLE_NAME = @TableName AND TC.CONSTRAINT_TYPE = 'PRIMARY KEY'";
+
+        //                    using (SqlCommand primaryKeyCommand = new SqlCommand(primaryKeyQuery, primaryKeyConnection))
+        //                    {
+        //                        primaryKeyCommand.Parameters.AddWithValue("@TableName", tableName);
+
+        //                        using (SqlDataReader primaryKeyReader = primaryKeyCommand.ExecuteReader())
+        //                        {
+        //                            while (primaryKeyReader.Read())
+        //                            {
+        //                                string columnName = primaryKeyReader["COLUMN_NAME"].ToString();
+        //                                tableModel.PrimaryKeys.Add(columnName);
+        //                            }
+        //                        }
+        //                    }
+        //                }
+
+        //                databaseModel.Tables[tableName] = tableModel;
+        //            }
+        //        }
+        //    }
+
+        //    return databaseModel;
+        //}
+
+
+
+        public async Task<ResponseModel> CreateTable(TableData tblData)
+        {
+            try
+            {
+                string connectionString = "server=172.17.1.11;database=Test;User ID=arsalan.raza;password=12345";
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    var tableName = tblData.TableName.Replace(" ", "_");
+
+                    if (TableExists(connection, tableName))
+                    {
+                        //Alter the Table
+                        AlterTable(connection, tableName, tblData.SelectedRows);
+                    }
+                    else
+                    {
+                        
+                   var columns = tblData.SelectedRows.Select(column =>
+                   $"{column.ColumnName} {column.DataType}" +
+                   $"{(!string.IsNullOrEmpty(column.Size) && int.TryParse(column.Size, out int size) ? $"({size})" : "")} " +
+                   $"{(column.AllowNull ? "NULL" : "NOT NULL")}");
+
+
+                        var createTableQuery = $"CREATE TABLE {tableName} ({string.Join(", ", columns)});";
+
+                        using (SqlCommand createCommand = new SqlCommand(createTableQuery, connection))
+                        {
+                            createCommand.ExecuteNonQuery();
+                        }
+
+                    }
+                }
+
+                var result = new ResponseModel
+                {
+                    IsSuccess = true,
+                    Message = "Table created or updated successfully",
+                };
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                var errorResult = new ResponseModel
+                {
+                    IsSuccess = false,
+                    Message = $"Error creating or updating table: {ex.Message}",
+                };
+
+                return errorResult;
+            }
+        }
+
+        private bool TableExists(SqlConnection connection, string tableName)
+        {
+
+            var checkTableQuery = $"SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}'";
+
+            using (SqlCommand checkTableCommand = new SqlCommand(checkTableQuery, connection))
+            {
+                int count = (int)checkTableCommand.ExecuteScalar();
+                return count > 0;
+            }
+        }
+
+
+        private bool ColumnExists(SqlConnection connection, string tableName, string columnName)
+        {
+            
+            var checkColumnQuery = $"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{tableName}' AND COLUMN_NAME = '{columnName}';";
+
+            using (SqlCommand checkColumnCommand = new SqlCommand(checkColumnQuery, connection))
+            {
+                int count = (int)checkColumnCommand.ExecuteScalar();
+                return count > 0;
+            }
+        }
+
+  
+        private void AlterTable(SqlConnection connection, string tableName, List<ColumnData> selectedRows)
+        {
+            
+            var existingColumns = GetTableColumns(connection, tableName);
+
+            foreach (var existingColumn in existingColumns)
+            {
+                if (!selectedRows.Any(selectedColumn => selectedColumn.ColumnName == existingColumn))
+                {
+                    RemoveColumn(connection, tableName, existingColumn);
+                }
+            }
+
+            foreach (var column in selectedRows)
+            {
+                if (ColumnExists(connection, tableName, column.ColumnName))
+                {
+                    // If column exists, alter it
+                    var alterColumnQuery = $"ALTER TABLE {tableName} ALTER COLUMN " +
+                       $"{column.ColumnName} {column.DataType} " +
+                       $"{(!string.IsNullOrEmpty(column.Size) && int.TryParse(column.Size, out int size) ? $"({size})" : "")} " +
+                       $"{(column.AllowNull ? "NULL" : "NOT NULL")} ";
+                    using (SqlCommand alterColumnCommand = new SqlCommand(alterColumnQuery, connection))
+                    {
+                        alterColumnCommand.ExecuteNonQuery();
+                    }
+                }
+                else
+                {
+                    var addColumnQuery = $"ALTER TABLE {tableName} ADD " +
+                        $"{column.ColumnName} {column.DataType} " +
+                        $"{(!string.IsNullOrEmpty(column.Size) && int.TryParse(column.Size, out int size) ? $"({size})" : "")} " +
+                        $"{(column.AllowNull ? "NULL" : "NOT NULL")} ";
+                    using (SqlCommand addColumnCommand = new SqlCommand(addColumnQuery, connection))
+                    {
+                        addColumnCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+
+        private List<string> GetTableColumns(SqlConnection connection, string tableName)
+        {
+           
+            var columns = new List<string>();
+
+            using (SqlCommand command = new SqlCommand($"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{tableName}'", connection))
+            {
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        columns.Add(reader["COLUMN_NAME"].ToString());
+                    }
+                }
+            }
+
+            return columns;
+        }
+
+        private void RemoveColumn(SqlConnection connection, string tableName, string columnName)
+        {
+
+            var dropColumnQuery = $"ALTER TABLE {tableName} DROP COLUMN {columnName};";
+
+            using (SqlCommand dropColumnCommand = new SqlCommand(dropColumnQuery, connection))
+            {
+                dropColumnCommand.ExecuteNonQuery();
+            }
+        }
+
 
 
     }
