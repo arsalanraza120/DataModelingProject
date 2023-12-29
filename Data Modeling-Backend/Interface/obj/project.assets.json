@@ -864,11 +864,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Interface\\Interface.csproj",
+      "projectUniqueName": "C:\\Users\\arsalan.raza\\Documents\\ProjectDataModelingUpdate\\DataModelingProject\\Data Modeling-Backend\\Interface\\Interface.csproj",
       "projectName": "Interface",
-      "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Interface\\Interface.csproj",
+      "projectPath": "C:\\Users\\arsalan.raza\\Documents\\ProjectDataModelingUpdate\\DataModelingProject\\Data Modeling-Backend\\Interface\\Interface.csproj",
       "packagesPath": "C:\\Users\\arsalan.raza\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Interface\\obj\\",
+      "outputPath": "C:\\Users\\arsalan.raza\\Documents\\ProjectDataModelingUpdate\\DataModelingProject\\Data Modeling-Backend\\Interface\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\arsalan.raza\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -885,8 +885,8 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Models\\Models.csproj": {
-              "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\Models\\Models.csproj"
+            "C:\\Users\\arsalan.raza\\Documents\\ProjectDataModelingUpdate\\DataModelingProject\\Data Modeling-Backend\\Models\\Models.csproj": {
+              "projectPath": "C:\\Users\\arsalan.raza\\Documents\\ProjectDataModelingUpdate\\DataModelingProject\\Data Modeling-Backend\\Models\\Models.csproj"
             }
           }
         }

@@ -34,13 +34,13 @@ export class dbService implements Resolve<any> {
     });
   }
 
-  configurationSave(configData: any): Observable<any> {
+configurationSave(configData: any): Observable<any> {
     return this._httpClient
       .post<any>(`${environment.apiUrl}/Configuration/SaveConnectionStringParams`, configData)
   }
 
-  getAllCredential(): Observable<any> {
-    return this._httpClient
+getAllCredential(): Observable<any> {
+      return this._httpClient
       .get<any>(`${environment.apiUrl}/Configuration/GetCredentialsByCredentialName`);
 }
 
@@ -57,11 +57,9 @@ getCredentialById(id: number): Observable<any> {
   return this._httpClient.get<any>(`${environment.apiUrl}/Configuration/GetCredentialById?id=${id}`);
 }
 
-
 getTableNames(credentials:any):Observable<any>{
   return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/GetTableNames`,credentials)
 }
-
 
 getMetaDataTableByName(tblName: string, credentials: any): Observable<any> {
   const params = { tblName: tblName };
@@ -69,19 +67,15 @@ getMetaDataTableByName(tblName: string, credentials: any): Observable<any> {
   return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/GetMetaDataTableByName`, body, { params: params });
 }
 
-
 createTable(data: any): Observable<any> {
   return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/CreateTable`,data)
 }
 
+getMetaDataMultipleTableByName(tableNames: string[], credentials: any): Observable<any> {
+  const body = { tableNames: tableNames, conn: credentials };
+  return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/GetMetaDataMultipleTableByName`, body);
+}
 
-
-
-
-
-  /**
-   * Get rows
-   */
   getDataTableRows(): Promise<any[]> {
     return new Promise((resolve, reject) => {
       this._httpClient.get('api/users-data').subscribe((response: any) => {

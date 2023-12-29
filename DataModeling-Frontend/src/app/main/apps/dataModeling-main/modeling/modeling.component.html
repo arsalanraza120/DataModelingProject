@@ -1,12 +1,12 @@
 <div class="content-wrapper container-xxl p-0">
-    <div class="content-body">
-        <div class="row match-height">
-            <div class="col-lg-4 col-md-4 col-12" style="overflow-x: hidden; height: 650px;">
-                <div class="card card-employee-task">
-                    <div class="card-header">
-                        <h4 class="card-title">Tables</h4>
-                    </div>
-                    <div class="card-body">
+  <div class="content-body">
+    <div class="row match-height">
+      <div class="col-lg-4 col-md-4 col-12" style="overflow-x: hidden; height: 650px;">
+        <div class="card card-employee-task">
+          <div class="card-header">
+            <h4 class="card-title">Tables</h4>
+          </div>
+                   <!-- <div class="card-body">
                         <div *ngIf="tblTasks && tblTasks.length > 0">
                             <div class="employee-task d-flex justify-content-between align-items-center"
                                 *ngFor="let tblName of tblTasks" (click)="onItemClick(tblName)">
@@ -16,15 +16,27 @@
                         <div *ngIf="tblTasks && tblTasks.length === 0">
                             No table available.
                         </div>
-                    </div>
+                    </div> -->
 
-                </div>
+          <div class="card-body">
+            <div *ngIf="tblTasks && tblTasks.length > 0">
+              <div class="employee-task d-flex" *ngFor="let tbl of tblTasks">
+                <input type="checkbox" [(ngModel)]="tbl.selected" (change)="onCheckboxChange(tbl)">
+                <h6 style="cursor: pointer;" class="mb-0">{{ tbl }}</h6>
+              </div>
             </div>
+            <div *ngIf="tblTasks && tblTasks.length === 0">
+              No table available.
+            </div>
+          </div>
 
-            <div *ngIf="tbl_com" class="col-lg-8 col-md-8 col-12">
-                <div class="card card-employee-task">
-                    <!-- icon start here -->
-                    <!-- <div class="demo-inline-spacing edit">
+        </div>
+      </div>
+
+      <div *ngIf="tbl_com" class="col-lg-8 col-md-8 col-12">
+        <div class="card card-employee-task">
+          <!-- icon start here -->
+          <!-- <div class="demo-inline-spacing edit">
 
                         <div class="avatar bg-secondary">
                             <div class="avatar-content" [ngbTooltip]="'Primary Key'">
@@ -55,15 +67,15 @@
                             </div>
                         </div>
                     </div> -->
-                    <!-- icon finish here -->
+          <!-- icon finish here -->
 
-                    <div class="overlay" *ngIf="loading">
-                      <div class="spinner"></div>
-                    </div>
-                  
-                  
-                    <!-- table start here  -->
-                    <div class="table-responsive">
+          <div class="overlay" *ngIf="loading">
+            <div class="spinner"></div>
+          </div>
+
+
+          <!-- table start here  -->
+          <!-- <div class="table-responsive">
                         <div style="overflow-x: hidden; height: 600px;" class="p-1">
                           <table class="table table-bordered">
                             <thead>
@@ -75,12 +87,13 @@
                                 <th>Size</th>
                                 <th>Allow Nulls</th>
                               </tr>
+
                             </thead>
                             <tbody>
-                              <tr *ngFor="let column of metaTblResponse.data.tables[currentTableName]?.columns">
+                              <tr *ngFor="let column of metaTblResponse.data.tables[currentTableName]?.columns; let i = index">
                                 <td class="tdheight">
                                     <input [(ngModel)]="column.isSelected" type="checkbox" (change)="isSelect()" />
-                                  </td>
+                                </td>
                                 <td class="tdheight">
                                   <input [(ngModel)]="column.columnName" [disabled]="!column.editable" />
                                 </td>
@@ -102,12 +115,57 @@
                           </table>
                           <button type="button" style="float: right;margin-top: 9px;" class="btn btn-primary" (click)="createObjTbl()">Create Table</button>
                         </div>
-                      </div>
-                    <!-- table finish here -->
+                      </div> -->
+          <!-- table finish here -->
 
-                </div>
+          <div class="table-responsive">
+            <div style="overflow-x: hidden; height: 600px;" class="p-1">
+              <input  type="checkbox"  [(ngModel)]="selectAllTrigger" (change)="selectAllColumn()" />
+            
+              <div *ngFor="let generatedTable of generatedTables">
+                <h2>{{ generatedTable.tableName }}</h2>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Column Name</th>
+                      <th>Data Type</th>
+                      <th>Size</th>
+                      <th>Allow Nulls</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let column of generatedTable.columns">
+                      <td class="tdheight">
+                        <input [(ngModel)]="column.isSelected" type="checkbox" (change)="isSelects(column)" />
+                      </td>
+                      <input [(ngModel)]="column.columnName" [disabled]="!column.editable" />
+                      <td class="tdheight">
+                        <input [(ngModel)]="column.dataType" [disabled]="!column.editable" />
+                      </td>
+                      <td class="tdheight">
+                        <input [(ngModel)]="column.size" [disabled]="!column.editable" /><br>
+                        <span *ngIf="!column.size">(Default: 1)</span>
+                      </td>
+                      <td class="tdheight">
+                        <input type="checkbox" [(ngModel)]="column.allowNull" [disabled]="!column.editable" />
+                      </td>
+                      <td class="tdheight">
+                        <button type="button" class="btn btn-secondary btn-icon btn-sm ml-auto"
+                          (click)="toggleEdit(column)">Edit</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+              <!-- <button type="button" style="float: right;margin-top: 9px;" class="btn btn-primary" (click)="createObjTbl()">Create Table</button> -->
             </div>
+          </div>
+
 
         </div>
+      </div>
+
     </div>
+  </div>
 </div>

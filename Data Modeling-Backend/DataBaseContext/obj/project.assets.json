@@ -2014,11 +2014,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\DataBaseContext\\DataBaseContext.csproj",
+      "projectUniqueName": "C:\\Users\\arsalan.raza\\Documents\\ProjectDataModelingUpdate\\DataModelingProject\\Data Modeling-Backend\\DataBaseContext\\DataBaseContext.csproj",
       "projectName": "DataBaseContext",
-      "projectPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\DataBaseContext\\DataBaseContext.csproj",
+      "projectPath": "C:\\Users\\arsalan.raza\\Documents\\ProjectDataModelingUpdate\\DataModelingProject\\Data Modeling-Backend\\DataBaseContext\\DataBaseContext.csproj",
       "packagesPath": "C:\\Users\\arsalan.raza\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\arsalan.raza\\Documents\\Project Data Modeling\\DataModelingProject\\Data Modeling-Backend\\DataBaseContext\\obj\\",
+      "outputPath": "C:\\Users\\arsalan.raza\\Documents\\ProjectDataModelingUpdate\\DataModelingProject\\Data Modeling-Backend\\DataBaseContext\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\arsalan.raza\\AppData\\Roaming\\NuGet\\NuGet.Config",

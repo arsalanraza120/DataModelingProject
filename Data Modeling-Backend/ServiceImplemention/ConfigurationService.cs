@@ -808,7 +808,6 @@ namespace ServiceImplemention
             if (Conn.dbType == DatabaseType.SQLServer.ToString())
             {
                 string sqlserverCon = GenerateSQLServerConnectionTmp(Conn);
-
                 Dictionary<string, DatabaseModel> tablesMetadata = await Task.Run(() => GetMultipleTablesMetadata(tableNames, sqlserverCon));
 
                 _rresponsewrapper.Data = tablesMetadata;
@@ -827,7 +826,6 @@ namespace ServiceImplemention
                 string SqlserverconString = GenerateSQLServerConnectionTmp(Conn);
                 //  DatabaseModel databaseModel = GetTableColumnDataTypes(SqlserverconString);
 
-
                 _rresponsewrapper.Data = "";//databaseModel;
                 _rresponsewrapper.IsSuccess = true;
 
@@ -835,8 +833,6 @@ namespace ServiceImplemention
             else if (Conn.dbType == DatabaseType.Oracle.ToString())
             {
                 string OracleConString = GenerateOracleConnectionTmp(Conn);
-
-
             }
 
             return _rresponsewrapper;
@@ -993,7 +989,6 @@ namespace ServiceImplemention
 
                     if (TableExists(connection, tableName))
                     {
-                        //Alter the Table
                         AlterTable(connection, tableName, tblData.SelectedRows);
                     }
                     else
@@ -1005,7 +1000,7 @@ namespace ServiceImplemention
                    $"{(column.AllowNull ? "NULL" : "NOT NULL")}");
 
 
-                        var createTableQuery = $"CREATE TABLE {tableName} ({string.Join(", ", columns)});";
+                        var createTableQuery = $"CREATE TABLE {"["+tableName+"]"} ({string.Join(", ", columns)});";
 
                         using (SqlCommand createCommand = new SqlCommand(createTableQuery, connection))
                         {
@@ -1037,9 +1032,7 @@ namespace ServiceImplemention
 
         private bool TableExists(SqlConnection connection, string tableName)
         {
-
             var checkTableQuery = $"SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}'";
-
             using (SqlCommand checkTableCommand = new SqlCommand(checkTableQuery, connection))
             {
                 int count = (int)checkTableCommand.ExecuteScalar();
@@ -1060,7 +1053,6 @@ namespace ServiceImplemention
             }
         }
 
-  
         private void AlterTable(SqlConnection connection, string tableName, List<ColumnData> selectedRows)
         {
             

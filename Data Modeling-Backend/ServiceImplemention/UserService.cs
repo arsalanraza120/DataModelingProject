@@ -73,7 +73,6 @@ namespace ServiceImplemention
                 }
                 else
                 {
-
                     _rresponsewrapper.IsSuccess = false;
                     _rresponsewrapper.Message = "Already User Registered";
 

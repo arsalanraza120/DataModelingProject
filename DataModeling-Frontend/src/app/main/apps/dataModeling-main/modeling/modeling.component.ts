@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { connectionDataService } from '../connectionData.service';
 import Swal from 'sweetalert2';
 
-
 interface Column {
     columnName: string;
     dataType: string;
@@ -43,23 +42,24 @@ interface MetaTableResponse {
 
 
 export class ModelingComponent implements OnInit {
-
+    selectedColumns: any[] = [];
+    selectedTables: string[] = [];
+    generatedTables: any[] = [];
     tbl_com: boolean;
     routedataId: any;
     tblTasks: any[] = [];
     currentTableName: string;
     selectAllChecked: boolean = false;
     selectedRows: any[] = [];
-    loading = true;
+    loading = false;
     metaTblResponse: MetaTableResponse;
-
-
+    selectAllTrigger: boolean = false;
 
     ngOnInit(): void {
-       this.selectAllChecked = false;
+        this.selectAllChecked = false;
     }
-    toggleEdit(column: any) {
 
+    toggleEdit(column: any) {
         column.editable = !column.editable;
     }
 
@@ -83,7 +83,6 @@ export class ModelingComponent implements OnInit {
                             if (apiResponse.data.isSuccess) {
                                 this.loading = false;
                                 this.tblTasks = apiResponse.data.data;
-
                             }
                             else if (apiResponse.data.isSuccess == false) {
                                 const message = apiResponse.data.message;
@@ -95,6 +94,10 @@ export class ModelingComponent implements OnInit {
                             }
                         },
                         error => {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error fetching table names" + error,
+                            })
                             console.error('Error fetching table names:', error);
                         }
                     );
@@ -108,11 +111,11 @@ export class ModelingComponent implements OnInit {
 
     createObjTbl() {
         this.loading = true;
-        if (this.selectedRows.length > 0) {
-            const tableName = this.metaTblResponse.data.tableName
+        if (this.selectedColumns.length > 0) {
+            const tableName = "abc"//this.metaTblResponse.data.tableName
             const dataToSend = {
                 tableName: tableName,
-                selectedRows: this.selectedRows,
+                selectedRows: this.selectedColumns,
             };
             this._dbService.createTable(dataToSend).subscribe((res: any) => {
                 if (res.isSuccess) {
@@ -142,20 +145,104 @@ export class ModelingComponent implements OnInit {
         }
     }
 
+    onCheckboxChange(tblName: string) {
+        this.loading = true;
+        const index = this.selectedTables.indexOf(tblName);
+        if (index === -1) {
+            this.generatedTables = [] = [];
+            this.selectedTables.push(tblName);
+        } else {
+            this.loading = false;
+            this.tbl_com = false;
+            this.generatedTables = [] = [];
+            this.selectedTables.splice(index, 1);
+        }
+        this.getMetaDataForSelectedTables();
+    }
+    // getMetaDataForSelectedTables() {
+    //     if (this.selectedTables.length > 0) {
+    //         this.tbl_com = true;
+    //         this._dbService.getMetaDataMultipleTableByName(this.selectedTables, this.connectionDataService.getConnectionData())
+    //             .subscribe((res: MetaTableResponse) => {
+    //                 if (res.isSuccess) {
+    //                     debugger;
+    //                     this.metaTblResponse = res;
+    //                     console.log("Testing",this.metaTblResponse);
+    //                 } else if (res.isSuccess === false) {
 
-    onItemClick(tblName: string) {
-        this.tbl_com = true;
-        this._dbService.getMetaDataTableByName(tblName, this.connectionDataService.getConnectionData())
-            .subscribe((res: MetaTableResponse) => {
-                if (res.isSuccess) {
-                    this.metaTblResponse = res;
-                    this.currentTableName = res.data.tableName;
+    //                 }
+    //             });
+    //     }
+    // }
+    getMetaDataForSelectedTables() {
+        if (this.selectedTables.length > 0) {
+            this.tbl_com = true;
+            this._dbService.getMetaDataMultipleTableByName(this.selectedTables, this.connectionDataService.getConnectionData())
+                .subscribe((res: any) => {
+                    debugger
+                    if (res.isSuccess) {
+                        debugger
+                        this.loading = false;
+                        this.metaTblResponse = res.data;
+                        this.generatedTables = [] = [];
+                        for (const tableName in this.metaTblResponse) {
+                            if (Object.prototype.hasOwnProperty.call(this.metaTblResponse, tableName)) {
+                                const table = this.metaTblResponse[tableName];
+                                this.generateTable(table);
+                            }
+                        }
+                    } else {
 
-                } else if (res.isSuccess === false) {
+                    }
+                });
+        }
+    }
 
+    generateTable(table: any): void {
+        this.generatedTables.push({
+            tableName: table.tableName,
+            columns: table.tables[table.tableName].columns
+        });
+    }
+
+    // onItemClick(tblName: string) {
+    //     this.tbl_com = true;
+    // this._dbService.getMetaDataTableByName(tblName, this.connectionDataService.getConnectionData())
+    //     .subscribe((res: MetaTableResponse) => {
+    //         if (res.isSuccess) {
+    //             this.metaTblResponse = res;
+    //             this.currentTableName = res.data.tableName;
+
+    //         } else if (res.isSuccess === false) {
+
+    //         }
+    //     });
+    // }
+
+
+
+    selectAllColumn(): void {
+        this.selectedColumns = [];
+        const isAnyColumnUnselected = this.generatedTables.some(table => table.columns.some(column => !column.isSelected));
+        this.generatedTables.forEach(table => {
+            table.columns.forEach(column => {
+                column.isSelected = isAnyColumnUnselected;
+                if (isAnyColumnUnselected) {
+                    this.selectedColumns.push(column);
                 }
             });
+        });
+        this.selectAllTrigger = false;
     }
+
+    isSelects(column: any): void {
+        if (column.isSelected) {
+            this.selectedColumns.push(column);
+        } else {
+            this.selectedColumns = this.selectedColumns.filter(selectedColumn => selectedColumn !== column);
+        }
+    }
+
 
 
 
