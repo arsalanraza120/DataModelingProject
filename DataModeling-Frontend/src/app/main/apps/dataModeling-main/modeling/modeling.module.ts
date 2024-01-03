@@ -41,7 +41,6 @@ const routes: Routes = [
         NgApexchartsModule,
         FormsModule,
         ReactiveFormsModule,
-        NgbModule,
         InputMaskModule,
         NgSelectModule,
         Ng2FlatpickrModule,

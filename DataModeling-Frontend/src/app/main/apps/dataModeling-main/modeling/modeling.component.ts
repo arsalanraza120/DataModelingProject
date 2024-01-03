@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { dbService } from '../db-list/db-list.service';
 import { ActivatedRoute } from '@angular/router';
 import { connectionDataService } from '../connectionData.service';
 import Swal from 'sweetalert2';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ContextMenuComponentComponent } from '../context-menu-component/context-menu-component.component';
+
 
 interface Column {
     columnName: string;
@@ -42,6 +45,13 @@ interface MetaTableResponse {
 
 
 export class ModelingComponent implements OnInit {
+    @ViewChild('modalContent') modalContent: any;
+    newRow: any = { columnName: '', dataType: '', size: '', allowNull: false };
+    
+    contextMenuOptions = [
+        { label: 'Insert Column', action: 'insert' },
+        { label: 'Delete Column', action: 'delete' }
+      ];
     selectedColumns: any[] = [];
     selectedTables: string[] = [];
     generatedTables: any[] = [];
@@ -54,7 +64,8 @@ export class ModelingComponent implements OnInit {
     loading = false;
     metaTblResponse: MetaTableResponse;
     selectAllTrigger: boolean = false;
-
+    selectedColumn: any;
+    
     ngOnInit(): void {
         this.selectAllChecked = false;
     }
@@ -66,7 +77,8 @@ export class ModelingComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private connectionDataService: connectionDataService,
-        private _dbService: dbService
+        private _dbService: dbService,
+        private modalService: NgbModal,
     ) {
 
         this.tbl_com = false;
@@ -112,7 +124,7 @@ export class ModelingComponent implements OnInit {
     createObjTbl() {
         this.loading = true;
         if (this.selectedColumns.length > 0) {
-            const tableName = "abc"//this.metaTblResponse.data.tableName
+            const tableName = this.currentTableName
             const dataToSend = {
                 tableName: tableName,
                 selectedRows: this.selectedColumns,
@@ -159,29 +171,13 @@ export class ModelingComponent implements OnInit {
         }
         this.getMetaDataForSelectedTables();
     }
-    // getMetaDataForSelectedTables() {
-    //     if (this.selectedTables.length > 0) {
-    //         this.tbl_com = true;
-    //         this._dbService.getMetaDataMultipleTableByName(this.selectedTables, this.connectionDataService.getConnectionData())
-    //             .subscribe((res: MetaTableResponse) => {
-    //                 if (res.isSuccess) {
-    //                     debugger;
-    //                     this.metaTblResponse = res;
-    //                     console.log("Testing",this.metaTblResponse);
-    //                 } else if (res.isSuccess === false) {
 
-    //                 }
-    //             });
-    //     }
-    // }
     getMetaDataForSelectedTables() {
         if (this.selectedTables.length > 0) {
             this.tbl_com = true;
             this._dbService.getMetaDataMultipleTableByName(this.selectedTables, this.connectionDataService.getConnectionData())
                 .subscribe((res: any) => {
-                    debugger
                     if (res.isSuccess) {
-                        debugger
                         this.loading = false;
                         this.metaTblResponse = res.data;
                         this.generatedTables = [] = [];
@@ -199,26 +195,12 @@ export class ModelingComponent implements OnInit {
     }
 
     generateTable(table: any): void {
+        this.selectedColumns = [];
         this.generatedTables.push({
             tableName: table.tableName,
             columns: table.tables[table.tableName].columns
         });
     }
-
-    // onItemClick(tblName: string) {
-    //     this.tbl_com = true;
-    // this._dbService.getMetaDataTableByName(tblName, this.connectionDataService.getConnectionData())
-    //     .subscribe((res: MetaTableResponse) => {
-    //         if (res.isSuccess) {
-    //             this.metaTblResponse = res;
-    //             this.currentTableName = res.data.tableName;
-
-    //         } else if (res.isSuccess === false) {
-
-    //         }
-    //     });
-    // }
-
 
 
     selectAllColumn(): void {
@@ -235,33 +217,36 @@ export class ModelingComponent implements OnInit {
         this.selectAllTrigger = false;
     }
 
-    isSelects(column: any): void {
+    isSelect(column: any): void { 
         if (column.isSelected) {
             this.selectedColumns.push(column);
         } else {
             this.selectedColumns = this.selectedColumns.filter(selectedColumn => selectedColumn !== column);
         }
+      
     }
 
+    openModal(): void {
+        const modalRef = this.modalService.open(this.modalContent, { size: 'lg' });
+        modalRef.componentInstance.selectedColumns = this.selectedColumns;
+      }
 
+      onRightClick(event: MouseEvent, column: any) {
+        event.preventDefault();
+        this.openContextMenu(column);
+      }
+    
 
-
-    selectAllColumns() {
-        const currentTable = this.metaTblResponse.data.tables[this.currentTableName];
-        if (currentTable) {
-            for (var i = 0; i < currentTable.columns.length; i++) {
-                currentTable.columns[i].isSelected = this.selectAllChecked;
-            }
-            this.selectedRows = currentTable.columns.filter((item: any) => item.isSelected);
-        }
-    }
-
-    isSelect() {
-        const currentTable = this.metaTblResponse.data.tables[this.currentTableName];
-        if (currentTable) {
-            this.selectAllChecked = currentTable.columns.every((item: any) => item.isSelected === true);
-            this.selectedRows = currentTable.columns.filter((item: any) => item.isSelected);
-        }
-    }
+      openContextMenu(column: any) {
+        const modalRef = this.modalService.open(ContextMenuComponentComponent, 
+        { backdrop: 'static', keyboard: false });
+        modalRef.componentInstance.column = column;
+        modalRef.result.then((result) => {
+          console.log(`Context menu result: ${result}`);
+        }, (reason) => {
+          console.log(`Context menu dismissed: ${reason}`);
+        });
+      }
+      
 
 }

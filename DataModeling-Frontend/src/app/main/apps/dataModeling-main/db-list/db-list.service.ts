@@ -8,6 +8,8 @@ import { BehaviorSubject, Observable} from 'rxjs';
 @Injectable()
 export class dbService implements Resolve<any> {
   public rows: any;
+  selectedColumns: any[] = [];
+  selectedRows:any[] = [];
   public onUserListChanged: BehaviorSubject<any>;
  /**
    * Constructor
@@ -15,7 +17,6 @@ export class dbService implements Resolve<any> {
    * @param {HttpClient} _httpClient
    */
   constructor(private _httpClient: HttpClient) {
-    // Set the defaults
     this.onUserListChanged = new BehaviorSubject({});
   }
 
