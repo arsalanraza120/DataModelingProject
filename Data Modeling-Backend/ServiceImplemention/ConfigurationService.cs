@@ -935,7 +935,7 @@ namespace ServiceImplemention
             {
                 if (ColumnExists(connection, tableName, column.ColumnName))
                 {
-                    // If column exists, alter it
+                    
                     var alterColumnQuery = $"ALTER TABLE {tableName} ALTER COLUMN " +
                        $"{column.ColumnName} {column.DataType} " +
                        $"{(!string.IsNullOrEmpty(column.Size) && int.TryParse(column.Size, out int size) ? $"({size})" : "")} " +

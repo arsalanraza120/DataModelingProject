@@ -47,11 +47,11 @@ interface MetaTableResponse {
 export class ModelingComponent implements OnInit {
     @ViewChild('modalContent') modalContent: any;
     newRow: any = { columnName: '', dataType: '', size: '', allowNull: false };
-    
+
     contextMenuOptions = [
         { label: 'Insert Column', action: 'insert' },
         { label: 'Delete Column', action: 'delete' }
-      ];
+    ];
     selectedColumns: any[] = [];
     selectedTables: string[] = [];
     generatedTables: any[] = [];
@@ -65,7 +65,7 @@ export class ModelingComponent implements OnInit {
     metaTblResponse: MetaTableResponse;
     selectAllTrigger: boolean = false;
     selectedColumn: any;
-    
+
     ngOnInit(): void {
         this.selectAllChecked = false;
     }
@@ -121,30 +121,42 @@ export class ModelingComponent implements OnInit {
         });
     }
 
+
     createObjTbl() {
         this.loading = true;
+        if (!this.currentTableName) {
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Table Name Required',
+                text: 'Please enter a table name before creating the table.',
+            });
+            this.loading = false;
+            return;
+        }
+
         if (this.selectedColumns.length > 0) {
-            const tableName = this.currentTableName
+            const tableName = this.currentTableName;
             const dataToSend = {
                 tableName: tableName,
                 selectedRows: this.selectedColumns,
             };
+
             this._dbService.createTable(dataToSend).subscribe((res: any) => {
                 if (res.isSuccess) {
                     this.loading = false;
                     const message = res.message;
                     Swal.fire({
                         icon: 'success',
-                        title: 'Table SuccessFully',
+                        title: 'Table Successfully Created',
                         text: message,
                     });
-                }
-                else if (res.isSuccess == false) {
+                } else {
                     this.loading = false;
-                    const message = res.message;
+                    const message = res.message || 'An error occurred while creating the table.';
                     Swal.fire({
                         icon: 'error',
-                        title: 'Table Error',
+                        title: 'Table Creation Error',
                         text: message,
                     });
                 }
@@ -152,10 +164,13 @@ export class ModelingComponent implements OnInit {
         } else {
             Swal.fire({
                 icon: 'warning',
-                title: 'No Rows selected',
+                title: 'No Rows Selected',
+                text: 'Please select at least one row before creating the table.',
             });
+            this.loading = false;
         }
     }
+
 
     onCheckboxChange(tblName: string) {
         this.loading = true;
@@ -217,36 +232,49 @@ export class ModelingComponent implements OnInit {
         this.selectAllTrigger = false;
     }
 
-    isSelect(column: any): void { 
+    isSelect(column: any): void {
         if (column.isSelected) {
             this.selectedColumns.push(column);
         } else {
             this.selectedColumns = this.selectedColumns.filter(selectedColumn => selectedColumn !== column);
         }
-      
+
     }
 
     openModal(): void {
         const modalRef = this.modalService.open(this.modalContent, { size: 'lg' });
         modalRef.componentInstance.selectedColumns = this.selectedColumns;
-      }
+       
 
-      onRightClick(event: MouseEvent, column: any) {
+    }
+
+    onRightClick(event: MouseEvent, column: any) {
         event.preventDefault();
         this.openContextMenu(column);
-      }
-    
+    }
 
-      openContextMenu(column: any) {
-        const modalRef = this.modalService.open(ContextMenuComponentComponent, 
-        { backdrop: 'static', keyboard: false });
+
+    openContextMenu(column: any) {
+        debugger
+        const modalRef = this.modalService.open(ContextMenuComponentComponent,
+            { backdrop: 'static', keyboard: false });
         modalRef.componentInstance.column = column;
         modalRef.result.then((result) => {
-          console.log(`Context menu result: ${result}`);
+            if (result === 'Delete Column clicked') {
+                this.deleteColumn(column); // Pass the entire column object
+            }
         }, (reason) => {
-          console.log(`Context menu dismissed: ${reason}`);
+            console.log(`Context menu dismissed: ${reason}`);
         });
-      }
-      
+    }
 
+
+    deleteColumn(column: any) {
+        debugger;
+        const index = this.selectedColumns.indexOf(column);
+        if (index !== -1) {
+            this.selectedColumns.splice(index, 1);
+        }
+        
+    }
 }

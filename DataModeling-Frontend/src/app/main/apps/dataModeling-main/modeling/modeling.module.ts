@@ -20,6 +20,7 @@ import { CoreSidebarModule } from '@core/components';
 import { dbService } from '../db-list/db-list.service';
 import { connectionDataService } from '../connectionData.service';
 import { BlockUIModule } from 'ng-block-ui';
+import { ContextMenuComponentComponent } from '../context-menu-component/context-menu-component.component';
 
 
 const routes: Routes = [
@@ -57,6 +58,7 @@ const routes: Routes = [
     ],
     declarations: [
         ModelingComponent,
+        ContextMenuComponentComponent
     ],
     exports: [
         ModelingComponent,

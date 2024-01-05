@@ -2,20 +2,20 @@ import { HttpClient, } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 import { environment } from 'environments/environment';
-import { BehaviorSubject, Observable} from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 
 @Injectable()
 export class dbService implements Resolve<any> {
   public rows: any;
   selectedColumns: any[] = [];
-  selectedRows:any[] = [];
+  selectedRows: any[] = [];
   public onUserListChanged: BehaviorSubject<any>;
- /**
-   * Constructor
-   *
-   * @param {HttpClient} _httpClient
-   */
+  /**
+    * Constructor
+    *
+    * @param {HttpClient} _httpClient
+    */
   constructor(private _httpClient: HttpClient) {
     this.onUserListChanged = new BehaviorSubject({});
   }
@@ -35,47 +35,47 @@ export class dbService implements Resolve<any> {
     });
   }
 
-configurationSave(configData: any): Observable<any> {
+  configurationSave(configData: any): Observable<any> {
     return this._httpClient
       .post<any>(`${environment.apiUrl}/Configuration/SaveConnectionStringParams`, configData)
   }
 
-getAllCredential(): Observable<any> {
-      return this._httpClient
+  getAllCredential(): Observable<any> {
+    return this._httpClient
       .get<any>(`${environment.apiUrl}/Configuration/GetCredentialsByCredentialName`);
-}
+  }
 
-removeCredential(id: number): Observable<any> {
-  return this._httpClient.delete<any>(`${environment.apiUrl}/Configuration/RemoveConnectionById?id=${id}`);
-}
+  removeCredential(id: number): Observable<any> {
+    return this._httpClient.delete<any>(`${environment.apiUrl}/Configuration/RemoveConnectionById?id=${id}`);
+  }
 
-fetchAllTable(credentials: any): Observable<any> {
-  return this._httpClient
-    .post<any>(`${environment.apiUrl}/Configuration/GetAllTablesMetaData`, credentials)
-}
+  fetchAllTable(credentials: any): Observable<any> {
+    return this._httpClient
+      .post<any>(`${environment.apiUrl}/Configuration/GetAllTablesMetaData`, credentials)
+  }
 
-getCredentialById(id: number): Observable<any> {
-  return this._httpClient.get<any>(`${environment.apiUrl}/Configuration/GetCredentialById?id=${id}`);
-}
+  getCredentialById(id: number): Observable<any> {
+    return this._httpClient.get<any>(`${environment.apiUrl}/Configuration/GetCredentialById?id=${id}`);
+  }
 
-getTableNames(credentials:any):Observable<any>{
-  return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/GetTableNames`,credentials)
-}
+  getTableNames(credentials: any): Observable<any> {
+    return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/GetTableNames`, credentials)
+  }
 
-getMetaDataTableByName(tblName: string, credentials: any): Observable<any> {
-  const params = { tblName: tblName };
-  const body = credentials;
-  return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/GetMetaDataTableByName`, body, { params: params });
-}
+  getMetaDataTableByName(tblName: string, credentials: any): Observable<any> {
+    const params = { tblName: tblName };
+    const body = credentials;
+    return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/GetMetaDataTableByName`, body, { params: params });
+  }
 
-createTable(data: any): Observable<any> {
-  return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/CreateTable`,data)
-}
+  createTable(data: any): Observable<any> {
+    return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/CreateTable`, data)
+  }
 
-getMetaDataMultipleTableByName(tableNames: string[], credentials: any): Observable<any> {
-  const body = { tableNames: tableNames, conn: credentials };
-  return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/GetMetaDataMultipleTableByName`, body);
-}
+  getMetaDataMultipleTableByName(tableNames: string[], credentials: any): Observable<any> {
+    const body = { tableNames: tableNames, conn: credentials };
+    return this._httpClient.post<any>(`${environment.apiUrl}/Configuration/GetMetaDataMultipleTableByName`, body);
+  }
 
   getDataTableRows(): Promise<any[]> {
     return new Promise((resolve, reject) => {

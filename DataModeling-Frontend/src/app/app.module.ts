@@ -12,6 +12,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrModule } from 'ngx-toastr';
 import { TranslateModule } from '@ngx-translate/core';
 import { ContextMenuModule } from '@ctrl/ngx-rightclick';
+import { FormsModule } from '@angular/forms';
 
 import { CoreModule } from '@core/core.module';
 import { CoreCommonModule } from '@core/common.module';
@@ -131,7 +132,7 @@ const appRoutes: Routes = [
         CoreSidebarModule,
         CoreThemeCustomizerModule,
         CardSnippetModule,
-        LayoutModule,
+        LayoutModule,FormsModule,
         ContentHeaderModule,
     ],
     providers: [

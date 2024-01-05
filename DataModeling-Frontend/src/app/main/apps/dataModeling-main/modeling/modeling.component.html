@@ -6,11 +6,10 @@
           <div class="card-header">
             <h4 class="card-title">Tables</h4>
           </div>
-          
           <div class="card-body">
             <div *ngIf="tblTasks && tblTasks.length > 0">
               <div class="employee-task d-flex" *ngFor="let tbl of tblTasks">
-                <input type="checkbox" [(ngModel)]="tbl.selected" (change)="onCheckboxChange(tbl)">
+                <input type="checkbox" (change)="onCheckboxChange(tbl)"> <!-- [(ngModel)]="tbl.selected" -->
                 <h6 style="cursor: pointer;" class="mb-0">{{ tbl }}</h6>
               </div>
             </div>
@@ -18,7 +17,6 @@
               No table available.
             </div>
           </div>
-
         </div>
       </div>
 
@@ -62,7 +60,7 @@
             <div class="spinner"></div>
           </div>
 
-      <div class="table-responsive">
+          <div class="table-responsive">
             <div style="overflow-x: hidden; height: 600px;" class="p-1">
               <label>SelectAll/DeselectAll Column</label>
               <input type="checkbox" [(ngModel)]="selectAllTrigger" (change)="selectAllColumn()" />
@@ -97,18 +95,15 @@
                       <td class="tdheight">
                         <button type="button" class="btn btn-secondary btn-icon btn-sm ml-auto"
                           (click)="toggleEdit(column)"><i data-feather="edit" class="mr-50"></i></button>
-                          
                       </td>
                     </tr>
                   </tbody>
                 </table>
-
               </div>
               <button type="button" class="btn btn-primary" (click)="openModal(modalContent)">View</button>
             </div>
           </div>
           <!-- Table End Here -->
-
         </div>
       </div>
 
@@ -126,8 +121,12 @@
   </div>
   <div class="modal-body">
     <div class="table-responsive">
-     <label for="tableName">Table Name</label>
-      <input id="tableName" [(ngModel)]="currentTableName" placeholder="Enter Table Name" />
+      <div class="table-name-input">
+        <label for="tableName" class="table-name-label">Table Name</label>
+        <input id="tableName" [(ngModel)]="currentTableName" placeholder="Enter Table Name"
+          class="table-name-input-field" />
+      </div>
+
       <table class="table table-bordered table-hover">
         <thead class="thead-light">
           <tr>
@@ -141,13 +140,39 @@
         <tbody>
           <tr *ngFor="let column of selectedColumns" (contextmenu)="onRightClick($event, selectedColumns)">
             <td class="tdheight">
-              <input [(ngModel)]="column.isSelected" type="checkbox" (change)="isSelect(column)" />
+              <input [(ngModel)]="column.isSelected" type="checkbox" [disabled]="true" />
             </td>
             <td class="tdheight">
               <input [(ngModel)]="column.columnName" [disabled]="!column.editable" />
             </td>
             <td class="tdheight">
-              <input [(ngModel)]="column.dataType" [disabled]="!column.editable" />
+              <select [(ngModel)]="column.dataType" [disabled]="!column.editable">
+                <option value="bigint">bigint</option>
+                <option value="binary">binary</option>
+                <option value="bit">bit</option>
+                <option value="char">char</option>
+                <option value="date">date</option>
+                <option value="datetime">datetime</option>
+                <option value="decimal">decimal</option>
+                <option value="float">float</option>
+                <option value="int">int</option>
+                <option value="money">money</option>
+                <option value="nchar">nchar</option>
+                <option value="ntext">ntext</option>
+                <option value="numeric">numeric</option>
+                <option value="nvarchar">nvarchar</option>
+                <option value="real">real</option>
+                <option value="smalldatetime">smalldatetime</option>
+                <option value="smallint">smallint</option>
+                <option value="smallmoney">smallmoney</option>
+                <option value="text">text</option>
+                <option value="time">time</option>
+                <option value="timestamp">timestamp</option>
+                <option value="tinyint">tinyint</option>
+                <option value="uniqueidentifier">uniqueidentifier</option>
+                <option value="varbinary">varbinary</option>
+                <option value="varchar">varchar</option>
+              </select>
             </td>
             <td class="tdheight">
               <input [(ngModel)]="column.size" [disabled]="!column.editable" /><br>
@@ -157,8 +182,8 @@
               <input type="checkbox" [(ngModel)]="column.allowNull" [disabled]="!column.editable" />
             </td>
             <td class="tdheight">
-              <button type="button" class="btn btn-secondary btn-icon btn-sm ml-auto"
-                (click)="toggleEdit(column)"><i data-feather="edit" class="mr-50"></i></button>
+              <button type="button" class="btn btn-secondary btn-icon btn-sm ml-auto" (click)="toggleEdit(column)"><i
+                  data-feather="edit" class="mr-50"></i></button>
             </td>
           </tr>
         </tbody>

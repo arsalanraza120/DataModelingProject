@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input } from '@angular/core';
+import { Component,  Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -7,32 +7,27 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     styleUrls: ['context-menu-component.component.scss']
 })
 export class ContextMenuComponentComponent {
-  
   @Input() column: any;
   constructor(public activeModal: NgbActiveModal) {}
-
-  InsertColumn() {
-    debugger;
-    const newRow = {
-        columnName: 'New Column', 
-        dataType: 'New Data Type',
-        size: 'New Size',
-        allowNull: true,
-      };
-  
-      this.column.push(newRow);
-    this.activeModal.close('Option 1 clicked');
-  }
-
-  DeleteColumn() {
-    debugger
-    const indexToDelete = this.column.findIndex((item) => item.columnName === this.column.columnName);
-
-    if (indexToDelete !== -1) {
-      this.column.splice(indexToDelete, 1); // Remove 1 element at the found index
-    }
-
-    this.activeModal.close('Option 2 clicked');
-  }
+  newRow: any = {}; 
  
+
+
+insertNewRow() {
+    const newRow = {
+      columnName: '',
+      dataType: '',
+      size: '',
+      allowNull: false,
+      isSelected:true,
+    };
+   this.column.push(newRow);
+    this.activeModal.close('Insert Column clicked');
+}
+
+deleteColumn() {
+  debugger;
+    console.log("Delete column:", this.column);
+    this.activeModal.close('Delete Column clicked');
+  }
 }

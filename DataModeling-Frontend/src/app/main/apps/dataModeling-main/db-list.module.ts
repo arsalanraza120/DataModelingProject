@@ -18,7 +18,7 @@ import { dbListComponent } from './db-list/db-list.component';
 import { dbService } from './db-list/db-list.service';
 import { ConfigurationComponent } from './configuration/configuration.component';
 
-// routing
+
 const routes: Routes = [
   {
     path: 'db-list',
@@ -28,7 +28,6 @@ const routes: Routes = [
     path: 'configuration/:id',
     component: ConfigurationComponent,
   },
-
   {
     path: 'configuration',
     component: ConfigurationComponent,
